@@ -1,4 +1,30 @@
+# Virtual Environment
+.venv/
+venv/
+env/
 
-data/processed/
-models/
+# Python Cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
 notebooks/catboost_info/
+
+# Environment Variables / Secrets
+.env
+.env.*
+
+# Generated Data
+data/processed/
+
+# Trained Models
+models/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
