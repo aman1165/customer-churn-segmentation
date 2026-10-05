@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Churn Prediction</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f7fb;
+            color: #1f2937;
+            padding: 35px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 6px;
+            font-size: 34px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-top: 0;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 21px;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 22px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 7px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .button-container {
+            margin-top: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #result {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .result-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .result-label {
+            display: block;
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .high-risk {
+            color: #dc2626;
+        }
+
+        .low-risk {
+            color: #16a34a;
+        }
+
+        .error {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Customer Churn Prediction</h1>
+
+    <p class="subtitle">
+        Analyze customer churn risk and identify customer segments.
+    </p>
+
+    <div class="card">
+
+        <form id="predictionForm">
+
+            <!-- ================================================= -->
+            <!-- Customer Profile -->
+            <!-- ================================================= -->
+
+            <div class="section">
+
+                <h2 class="section-title">
+                    Customer Profile
+                </h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Gender</label>
+                        <select id="gender">
+                            <option>Female</option>
+                            <option>Male</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Senior Citizen</label>
+                        <select id="SeniorCitizen">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Partner</label>
+                        <select id="Partner">
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Dependents</label>
+                        <select id="Dependents">
+                            <option>No</option>
+                            <option>Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Tenure (Months)</label>
+                        <input
+                            type="number"
+                            id="tenure"
+                            min="0"
+                            value="12"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>Phone Service</label>
+                        <select id="PhoneService">
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- Services -->
+            <!-- ================================================= -->
+
+            <div class="section">
+
+                <h2 class="section-title">
+                    Services
+                </h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Multiple Lines</label>
+                        <select id="MultipleLines">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No phone service</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Internet Service</label>
+                        <select id="InternetService">
+                            <option>Fiber optic</option>
+                            <option>DSL</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Online Security</label>
+                        <select id="OnlineSecurity">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No internet service</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Online Backup</label>
+                        <select id="OnlineBackup">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No internet service</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Device Protection</label>
+                        <select id="DeviceProtection">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No internet service</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Tech Support</label>
+                        <select id="TechSupport">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No internet service</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Streaming TV</label>
+                        <select id="StreamingTV">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No internet service</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Streaming Movies</label>
+                        <select id="StreamingMovies">
+                            <option>No</option>
+                            <option>Yes</option>
+                            <option>No internet service</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- Billing -->
+            <!-- ================================================= -->
+
+            <div class="section">
+
+                <h2 class="section-title">
+                    Billing & Contract
+                </h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Contract</label>
+                        <select id="Contract">
+                            <option>Month-to-month</option>
+                            <option>One year</option>
+                            <option>Two year</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Paperless Billing</label>
+                        <select id="PaperlessBilling">
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Payment Method</label>
+                        <select id="PaymentMethod">
+                            <option>Electronic check</option>
+                            <option>Mailed check</option>
+                            <option>Bank transfer (automatic)</option>
+                            <option>Credit card (automatic)</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Monthly Charges</label>
+                        <input
+                            type="number"
+                            id="MonthlyCharges"
+                            step="0.01"
+                            min="0"
+                            value="70"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>Total Charges</label>
+                        <input
+                            type="number"
+                            id="TotalCharges"
+                            step="0.01"
+                            min="0"
+                            value="840"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- Button -->
+            <!-- ================================================= -->
+
+            <div class="button-container">
+
+                <button type="submit">
+                    Predict Churn
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- ===================================================== -->
+        <!-- Result -->
+        <!-- ===================================================== -->
+
+        <div id="result">
+
+            <div class="result-card">
+
+                <h2 class="result-title">
+                    Prediction Result
+                </h2>
+
+                <div class="result-grid">
+
+                    <div class="result-box">
+
+                        <span class="result-label">
+                            Churn Risk
+                        </span>
+
+                        <span
+                            id="risk"
+                            class="result-value"
+                        >
+                            -
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-box">
+
+                        <span class="result-label">
+                            Churn Probability
+                        </span>
+
+                        <span
+                            id="probability"
+                            class="result-value"
+                        >
+                            -
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-box">
+
+                        <span class="result-label">
+                            Customer Segment
+                        </span>
+
+                        <span
+                            id="segment"
+                            class="result-value"
+                        >
+                            -
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document
+    .getElementById("predictionForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const customerData = {
+
+            gender:
+                document.getElementById("gender").value,
+
+            SeniorCitizen:
+                Number(
+                    document.getElementById(
+                        "SeniorCitizen"
+                    ).value
+                ),
+
+            Partner:
+                document.getElementById(
+                    "Partner"
+                ).value,
+
+            Dependents:
+                document.getElementById(
+                    "Dependents"
+                ).value,
+
+            tenure:
+                Number(
+                    document.getElementById(
+                        "tenure"
+                    ).value
+                ),
+
+            PhoneService:
+                document.getElementById(
+                    "PhoneService"
+                ).value,
+
+            MultipleLines:
+                document.getElementById(
+                    "MultipleLines"
+                ).value,
+
+            InternetService:
+                document.getElementById(
+                    "InternetService"
+                ).value,
+
+            OnlineSecurity:
+                document.getElementById(
+                    "OnlineSecurity"
+                ).value,
+
+            OnlineBackup:
+                document.getElementById(
+                    "OnlineBackup"
+                ).value,
+
+            DeviceProtection:
+                document.getElementById(
+                    "DeviceProtection"
+                ).value,
+
+            TechSupport:
+                document.getElementById(
+                    "TechSupport"
+                ).value,
+
+            StreamingTV:
+                document.getElementById(
+                    "StreamingTV"
+                ).value,
+
+            StreamingMovies:
+                document.getElementById(
+                    "StreamingMovies"
+                ).value,
+
+            Contract:
+                document.getElementById(
+                    "Contract"
+                ).value,
+
+            PaperlessBilling:
+                document.getElementById(
+                    "PaperlessBilling"
+                ).value,
+
+            PaymentMethod:
+                document.getElementById(
+                    "PaymentMethod"
+                ).value,
+
+            MonthlyCharges:
+                Number(
+                    document.getElementById(
+                        "MonthlyCharges"
+                    ).value
+                ),
+
+            TotalCharges:
+                Number(
+                    document.getElementById(
+                        "TotalCharges"
+                    ).value
+                )
+        };
+
+
+        const resultBox =
+            document.getElementById("result");
+
+        const riskElement =
+            document.getElementById("risk");
+
+        const probabilityElement =
+            document.getElementById("probability");
+
+        const segmentElement =
+            document.getElementById("segment");
+
+
+        resultBox.style.display = "block";
+
+        riskElement.textContent = "Predicting...";
+        probabilityElement.textContent = "...";
+        segmentElement.textContent = "...";
+
+
+        try {
+
+            const response = await fetch(
+                "/predict",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            customerData
+                        )
+                }
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    "Prediction failed"
+                );
+
+            }
+
+
+            const probability =
+                data.churn_probability * 100;
+
+
+            const isChurn =
+                data.churn_prediction === 1;
+
+
+            riskElement.textContent =
+                isChurn
+                    ? "High Risk"
+                    : "Low Risk";
+
+
+            riskElement.className =
+                "result-value " +
+                (
+                    isChurn
+                        ? "high-risk"
+                        : "low-risk"
+                );
+
+
+            probabilityElement.textContent =
+                probability.toFixed(2) + "%";
+
+
+            segmentElement.textContent =
+                "Segment " + data.segment;
+
+
+        } catch (error) {
+
+            riskElement.textContent =
+                "Error";
+
+            probabilityElement.textContent =
+                "-";
+
+            segmentElement.textContent =
+                "-";
+
+            riskElement.className =
+                "result-value error";
+
+            console.error(error);
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
