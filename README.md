@@ -1,13 +1,3 @@
-from pathlib import Path
-
-readme = r"""# Customer Churn & Segmentation
-
-An end-to-end Machine Learning project that predicts customer churn probability and segments customers using unsupervised learning.
-
-The project is built with Python, Pandas, Scikit-learn, XGBoost, CatBoost, FastAPI, Docker, and K-Means clustering.
-
----
-
 ## Project Overview
 
 Customer churn is a major business problem for subscription-based companies. The goal of this project is to help a business:
